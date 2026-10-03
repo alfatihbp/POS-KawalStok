@@ -7,7 +7,6 @@
 
     <div *ngIf="successMessage"
         class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-sm flex items-center gap-3">
-        <span class="text-lg">✅</span>
         <span class="font-medium">{{ successMessage }}</span>
     </div>
 
@@ -59,7 +58,7 @@
                                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
                                     <option value="">-- Pilih Barang --</option>
                                     <option *ngFor="let item of availableItems" [value]="item.id">
-                                        {{ item.name }} (Stok: {{ item.stock }}) {{ item.is_promo ? '🔥 [PROMO]' : '' }}
+                                        {{ item.name }}
                                     </option>
                                 </select>
                             </td>

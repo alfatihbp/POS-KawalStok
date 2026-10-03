@@ -15,6 +15,7 @@ export class ItemList implements OnInit {
   items: any[] = [];
   isLoading: boolean = true;
   errorMessage: string | null = null;
+  updatingItems: Set<number> = new Set<number>();
 
   ngOnInit(): void {
     this.fetchItems();
@@ -31,10 +32,32 @@ export class ItemList implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = 'Gagal memuat daftar item. Pastikan Mock API berjalan.';
+        this.errorMessage = 'Gagal memuat daftar item. Pastikan API berjalan.';
         console.error('Error fetching items:', err);
       }
     });
+  }
+
+  incrementStock(item: any): void {
+    this.updatingItems.add(item.id);
+    this.posService.updateItemStock(item.id, 1).subscribe(res => {
+        if (res.success) {
+            item.stock = res.data.stock;
+        }
+        this.updatingItems.delete(item.id);
+    });
+  }
+
+  decrementStock(item: any): void {
+    if (item.stock > 0) {
+        this.updatingItems.add(item.id);
+        this.posService.updateItemStock(item.id, -1).subscribe(res => {
+            if (res.success) {
+                item.stock = res.data.stock;
+            }
+            this.updatingItems.delete(item.id);
+        });
+    }
   }
 
   formatRupiah(amount: number): string {

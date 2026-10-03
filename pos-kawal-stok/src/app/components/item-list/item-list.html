@@ -1,45 +1,100 @@
-<div class="container" style="padding: 20px; font-family: sans-serif;">
-    <h2>Daftar Item</h2>
-
-    <div *ngIf="isLoading" style="padding: 10px; background-color: #e2e8f0; border-radius: 4px;">
-        Memuat data item...
+<div class="bg-white rounded-3xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+  
+  <div class="p-8 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white relative z-10">
+    <div>
+      <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Ketersediaan Stok</h2>
+      <p class="text-sm text-slate-500 mt-1 font-medium">Pantau dan kelola ketersediaan stok barang di gudang.</p>
     </div>
+    <button (click)="fetchItems()"
+      class="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-bold rounded-xl transition-all duration-200 flex items-center gap-2 border border-slate-200/60 shadow-sm hover:shadow active:scale-95">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+      Refresh
+    </button>
+  </div>
 
-    <div *ngIf="errorMessage"
-        style="padding: 10px; background-color: #fed7d7; color: #9b2c2c; border-radius: 4px; margin-bottom: 10px;">
-        {{ errorMessage }}
-        <button (click)="fetchItems()" style="margin-left: 10px;">Coba Lagi</button>
+  <div *ngIf="isLoading" class="p-16 flex flex-col items-center justify-center text-slate-400 bg-slate-50/50">
+    <div class="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+    <p class="text-sm font-medium">Memuat data inventaris...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="m-8 p-5 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-4">
+    <div class="p-2 bg-rose-100 rounded-lg text-rose-600 mt-0.5">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
     </div>
+    <div class="flex-1">
+      <h3 class="text-rose-800 font-bold mb-1">Gagal Memuat Data</h3>
+      <p class="text-rose-600 text-sm">{{ errorMessage }}</p>
+    </div>
+    <button (click)="fetchItems()" class="px-4 py-2 bg-white text-rose-600 text-sm font-bold rounded-xl shadow-sm border border-rose-200 hover:bg-rose-50 transition-colors">Coba Lagi</button>
+  </div>
 
-    <table *ngIf="!isLoading && !errorMessage" border="1" cellpadding="8" cellspacing="0"
-        style="width: 100%; border-collapse: collapse; text-align: left;">
-        <thead>
-            <tr style="background-color: #f7fafc;">
-                <th>ID</th>
-                <th>Nama Item</th>
-                <th>Harga</th>
-                <th>Stok Available</th>
-                <th>Status Promo</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let item of items">
-                <td>{{ item.id }}</td>
-                <td><strong>{{ item.name }}</strong></td>
-                <td>{{ formatRupiah(item.price) }}</td>
-                <td>{{ item.stock }}</td>
-                <td>
-                    <span *ngIf="item.is_promo"
-                        style="background-color: #feebc8; color: #7b341e; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 12px;">
-                        PROMO
-                    </span>
-                    <span *ngIf="!item.is_promo" style="color: #a0aec0;">Regular</span>
-                </td>
-            </tr>
-
-            <tr *ngIf="items.length === 0">
-                <td colspan="5" style="text-align: center; color: #718096;">Tidak ada data item.</td>
-            </tr>
-        </tbody>
+  <div *ngIf="!isLoading && !errorMessage" class="overflow-x-auto relative">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-slate-50/80 text-slate-500 text-xs uppercase font-extrabold tracking-wider border-b border-slate-200/80">
+          <th class="px-8 py-5">Item Produk</th>
+          <th class="px-8 py-5">Harga Satuan</th>
+          <th class="px-8 py-5 text-center">Status</th>
+          <th class="px-8 py-5 text-right">Kelola Stok</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <tr *ngFor="let item of items" class="hover:bg-indigo-50/30 transition-colors duration-200 group">
+          <td class="px-8 py-5">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-400 font-bold text-xs border border-slate-200/60 shadow-sm shrink-0">
+                #{{ item.id }}
+              </div>
+              <div>
+                <p class="font-bold text-slate-800">{{ item.name }}</p>
+                <p class="text-xs text-slate-400 font-medium mt-0.5">ID Produk: PKS-{{ item.id.toString().padStart(4, '0') }}</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-8 py-5 font-bold text-slate-700">
+            {{ formatRupiah(item.price) }}
+          </td>
+          <td class="px-8 py-5 text-center">
+            <span *ngIf="item.is_promo" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200/60 text-amber-700 text-xs font-bold shadow-sm">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1-1 4-1.25 4.5.5-1 .786-1.293 1.371-1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879-2.121z" clip-rule="evenodd"></path></svg>
+              PROMO
+            </span>
+            <span *ngIf="!item.is_promo" class="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 border border-slate-200/60 text-slate-500 text-xs font-bold">
+              REGULAR
+            </span>
+          </td>
+          <td class="px-8 py-5">
+            <div class="flex items-center justify-end gap-3">
+              <button (click)="decrementStock(item)" [disabled]="item.stock === 0 || updatingItems.has(item.id)" 
+                class="w-8 h-8 rounded-lg flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-rose-500 disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-slate-600 transition-all shadow-sm active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"></path></svg>
+              </button>
+              
+              <div class="w-14 text-center">
+                <span class="font-extrabold text-lg" [ngClass]="item.stock === 0 ? 'text-rose-500' : 'text-slate-800'">
+                  {{ updatingItems.has(item.id) ? '...' : item.stock }}
+                </span>
+                <p class="text-[9px] uppercase tracking-widest text-slate-400 font-bold -mt-0.5">Stok</p>
+              </div>
+              
+              <button (click)="incrementStock(item)" [disabled]="updatingItems.has(item.id)"
+                class="w-8 h-8 rounded-lg flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-emerald-500 disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-slate-600 transition-all shadow-sm active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        
+        <tr *ngIf="items.length === 0">
+          <td colspan="4" class="px-8 py-20 text-center">
+            <div class="w-16 h-16 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center mx-auto mb-4 text-slate-300">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+            </div>
+            <h3 class="text-slate-700 font-bold text-lg">Belum Ada Item</h3>
+            <p class="text-slate-400 mt-1 font-medium text-sm">Data inventaris barang kosong atau belum ditambahkan.</p>
+          </td>
+        </tr>
+      </tbody>
     </table>
+  </div>
 </div>
