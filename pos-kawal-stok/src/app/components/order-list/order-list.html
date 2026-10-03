@@ -1,1 +1,67 @@
-<p>order-list works!</p>
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5 mb-6">
+        <div>
+            <h2 class="text-xl font-bold text-slate-900">Daftar Pesanan</h2>
+            <p class="text-sm text-slate-500 mt-1">Kelola dan pantau status pesanan reseller.</p>
+        </div>
+
+        <button (click)="fetchOrders()"
+            class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-colors flex items-center gap-2 self-start sm:self-auto">
+            <span>🔄</span> Segarkan Data
+        </button>
+    </div>
+
+    <div *ngIf="isLoading" class="py-12 text-center text-slate-400">
+        <div
+            class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-500 border-t-transparent mb-2">
+        </div>
+        <p class="text-sm">Memuat data pesanan...</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-sm mb-6">
+        {{ errorMessage }}
+    </div>
+    <div *ngIf="!isLoading && !errorMessage" class="overflow-x-auto border border-slate-200 rounded-xl">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold border-b border-slate-200">
+                <tr>
+                    <th class="px-6 py-4">ID Pesanan</th>
+                    <th class="px-6 py-4">Nama Reseller</th>
+                    <th class="px-6 py-4">Status Pesanan</th>
+                    <th class="px-6 py-4 text-right">Total Pembayaran</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                <tr *ngFor="let order of orders" class="hover:bg-slate-50/60 transition-colors">
+                    <td class="px-6 py-4 font-mono font-bold text-indigo-600">
+                        #{{ order.id }}
+                    </td>
+                    <td class="px-6 py-4 font-semibold text-slate-800">
+                        {{ order.reseller }}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span [ngClass]="{
+              'bg-slate-100 text-slate-700 border-slate-300': order.status === 'draft',
+              'bg-amber-50 text-amber-700 border-amber-200': order.status === 'submitted',
+              'bg-emerald-50 text-emerald-700 border-emerald-200': order.status === 'fulfilled',
+              'bg-rose-50 text-rose-700 border-rose-200': order.status === 'cancelled'
+            }" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right font-extrabold text-slate-900">
+                        {{ formatRupiah(order.total) }}
+                    </td>
+                </tr>
+
+                <tr *ngIf="orders.length === 0">
+                    <td colspan="4" class="px-6 py-12 text-center text-slate-400">
+                        <p class="text-base font-medium">Belum ada pesanan terdaftar</p>
+                        <p class="text-xs mt-1">Buat pesanan pertama Anda melalui menu Buat Pesanan.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

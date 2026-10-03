@@ -1,19 +1,16 @@
 <div class="container" style="padding: 20px; font-family: sans-serif;">
     <h2>Daftar Item</h2>
 
-    <!-- State 1: Loading -->
     <div *ngIf="isLoading" style="padding: 10px; background-color: #e2e8f0; border-radius: 4px;">
         Memuat data item...
     </div>
 
-    <!-- State 2: Error -->
     <div *ngIf="errorMessage"
         style="padding: 10px; background-color: #fed7d7; color: #9b2c2c; border-radius: 4px; margin-bottom: 10px;">
         {{ errorMessage }}
         <button (click)="fetchItems()" style="margin-left: 10px;">Coba Lagi</button>
     </div>
 
-    <!-- State 3: Sukses & Tampil Data -->
     <table *ngIf="!isLoading && !errorMessage" border="1" cellpadding="8" cellspacing="0"
         style="width: 100%; border-collapse: collapse; text-align: left;">
         <thead>
@@ -40,7 +37,6 @@
                 </td>
             </tr>
 
-            <!-- Handling Data Kosong -->
             <tr *ngIf="items.length === 0">
                 <td colspan="5" style="text-align: center; color: #718096;">Tidak ada data item.</td>
             </tr>

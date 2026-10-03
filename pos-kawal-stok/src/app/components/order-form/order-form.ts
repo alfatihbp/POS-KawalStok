@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { PosService } from '../../services/pos.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-order-form',
@@ -13,6 +14,7 @@ import { PosService } from '../../services/pos.service';
 export class OrderForm implements OnInit {
   private fb = inject(FormBuilder);
   private posService = inject(PosService);
+  private router = inject(Router);
 
   orderForm!: FormGroup;
   availableItems: any[] = [];
@@ -25,7 +27,6 @@ export class OrderForm implements OnInit {
     this.loadItems();
   }
 
-  // Inisialisasi Form
   initForm(): void {
     this.orderForm = this.fb.group({
       reseller: ['', [Validators.required]],
@@ -33,17 +34,13 @@ export class OrderForm implements OnInit {
     });
   }
 
-  // Getter untuk kemudahan akses FormArray di HTML
   get lines(): FormArray {
     return this.orderForm.get('lines') as FormArray;
   }
-
-  // Ambil data item dari API untuk pilihan dropdown
   loadItems(): void {
     this.posService.getItems().subscribe({
       next: (items) => {
         this.availableItems = items;
-        // Tambahkan 1 baris item kosong secara default
         this.addLine();
       },
       error: (err) => {
@@ -52,7 +49,6 @@ export class OrderForm implements OnInit {
     });
   }
 
-  // Tambah baris item baru di pesanan
   addLine(): void {
     const lineGroup = this.fb.group({
       item_id: ['', Validators.required],
@@ -66,14 +62,12 @@ export class OrderForm implements OnInit {
     this.lines.push(lineGroup);
   }
 
-  // Hapus baris item
   removeLine(index: number): void {
     if (this.lines.length > 1) {
       this.lines.removeAt(index);
     }
   }
 
-  // Dipanggil saat item dipilih dari dropdown
   onItemChange(index: number): void {
     const line = this.lines.at(index);
     const selectedItemId = Number(line.get('item_id')?.value);
@@ -89,7 +83,6 @@ export class OrderForm implements OnInit {
     }
   }
 
-  // **LOGIKA KUNCI (Aturan 2.3)**: Perhitungan Diskon & Pembulatan
   recalculateLine(index: number): void {
     const line = this.lines.at(index);
     const qty = Number(line.get('qty')?.value) || 0;
@@ -98,7 +91,6 @@ export class OrderForm implements OnInit {
 
     let discountPercent = 0;
 
-    // Item promo selalu 0% diskon
     if (!isPromo) {
       if (qty >= 50) {
         discountPercent = 10;
@@ -107,7 +99,6 @@ export class OrderForm implements OnInit {
       }
     }
 
-    // Perhitungan line_total dengan pembulatan ke bawah (Math.floor)
     const lineTotal = Math.floor((qty * unitPrice * (100 - discountPercent)) / 100);
 
     line.patchValue({
@@ -116,14 +107,12 @@ export class OrderForm implements OnInit {
     }, { emitEvent: false });
   }
 
-  // Hitung total keseluruhan pesanan
   get grandTotal(): number {
     return this.lines.controls.reduce((sum, line) => {
       return sum + (Number(line.get('line_total')?.value) || 0);
     }, 0);
   }
 
-  // Submit Form ke Mock API
   onSubmit(): void {
     if (this.orderForm.invalid) {
       this.orderForm.markAllAsTouched();
@@ -155,10 +144,10 @@ export class OrderForm implements OnInit {
         this.orderForm.reset();
         this.lines.clear();
         this.addLine();
+        this.router.navigate(['/orders']);
       },
       error: (err) => {
         this.isLoading = false;
-        // Tangani Error 4xx dari API (Aturan 4.2)
         this.errorMessage = err.error?.message || 'Gagal membuat pesanan. Periksa stok item Anda.';
       }
     });

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class PosService {
     private http = inject(HttpClient);
-    private baseUrl = 'http://localhost:3000'; // Sesuaikan URL Mock API BSI
+    private baseUrl = 'http://localhost:3000';
 
     getItems(): Observable<any[]> {
         return this.http.get<any[]>(`${this.baseUrl}/items`);

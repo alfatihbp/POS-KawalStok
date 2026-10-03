@@ -1,95 +1,113 @@
-<div class="container" style="padding: 20px; font-family: sans-serif; max-width: 900px;">
-    <h2>Buat Pesanan Baru (Draft)</h2>
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
 
-    <!-- Pesan Sukses -->
-    <div *ngIf="successMessage"
-        style="padding: 10px; background-color: #c6f6d5; color: #22543d; border-radius: 4px; margin-bottom: 15px;">
-        {{ successMessage }}
+    <div class="border-b border-slate-100 pb-5 mb-6">
+        <h2 class="text-xl font-bold text-slate-900">Buat Pesanan Baru</h2>
+        <p class="text-sm text-slate-500 mt-1">Pilih reseller dan tentukan item serta kuantitas pesanan.</p>
     </div>
 
-    <!-- Pesan Error 4xx dari API -->
+    <div *ngIf="successMessage"
+        class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-sm flex items-center gap-3">
+        <span class="text-lg">✅</span>
+        <span class="font-medium">{{ successMessage }}</span>
+    </div>
+
     <div *ngIf="errorMessage"
-        style="padding: 10px; background-color: #fed7d7; color: #9b2c2c; border-radius: 4px; margin-bottom: 15px;">
-        {{ errorMessage }}
+        class="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-sm flex items-center gap-3">
+        <span class="font-medium">{{ errorMessage }}</span>
     </div>
 
     <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
-        <!-- Input Reseller -->
-        <div style="margin-bottom: 20px;">
-            <label style="display: block; font-weight: bold; margin-bottom: 5px;">Nama Reseller:</label>
-            <input type="text" formControlName="reseller" placeholder="Masukkan nama reseller"
-                style="width: 100%; padding: 8px; box-sizing: border-box;">
-            <small *ngIf="orderForm.get('reseller')?.touched && orderForm.get('reseller')?.invalid" style="color: red;">
+
+        <div class="mb-8 max-w-md">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Reseller <span
+                    class="text-rose-500">*</span></label>
+            <input type="text" formControlName="reseller" placeholder="Contoh: Toko Berkah Jaya"
+                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none text-sm">
+            <p *ngIf="orderForm.get('reseller')?.touched && orderForm.get('reseller')?.invalid"
+                class="text-xs text-rose-500 mt-1.5 font-medium">
                 Nama reseller wajib diisi.
-            </small>
+            </p>
         </div>
 
-        <!-- Tabel FormArray Item -->
-        <h3>Baris Item Pesanan</h3>
-        <table border="1" cellpadding="8" cellspacing="0"
-            style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
-            <thead>
-                <tr style="background-color: #edf2f7;">
-                    <th style="width: 35%;">Item</th>
-                    <th style="width: 15%;">Harga Satuan</th>
-                    <th style="width: 15%;">Qty</th>
-                    <th style="width: 10%;">Diskon</th>
-                    <th style="width: 15%;">Subtotal</th>
-                    <th style="width: 10%;">Aksi</th>
-                </tr>
-            </thead>
-            <tbody formArrayName="lines">
-                <tr *ngFor="let line of lines.controls; let i = index" [formGroupName]="i">
-                    <!-- Pilih Item -->
-                    <td>
-                        <select formControlName="item_id" (change)="onItemChange(i)" style="width: 100%; padding: 6px;">
-                            <option value="">-- Pilih Item --</option>
-                            <option *ngFor="let item of availableItems" [value]="item.id">
-                                {{ item.name }} (Stok: {{ item.stock }}) {{ item.is_promo ? '[PROMO]' : '' }}
-                            </option>
-                        </select>
-                    </td>
+        <div class="mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-slate-800">Baris Item Pesanan</h3>
+                <button type="button" (click)="addLine()"
+                    class="px-3.5 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5">
+                    <span>+</span> Tambah Item
+                </button>
+            </div>
 
-                    <!-- Harga Satuan Snapshot -->
-                    <td>{{ formatRupiah(line.get('unit_price')?.value) }}</td>
+            <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold border-b border-slate-200">
+                        <tr>
+                            <th class="px-4 py-3 min-w-[240px]">Item</th>
+                            <th class="px-4 py-3">Harga Satuan</th>
+                            <th class="px-4 py-3 w-28">Qty</th>
+                            <th class="px-4 py-3 text-center">Diskon</th>
+                            <th class="px-4 py-3 text-right">Subtotal</th>
+                            <th class="px-4 py-3 text-center w-16">Hapus</th>
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="lines" class="divide-y divide-slate-100">
+                        <tr *ngFor="let line of lines.controls; let i = index" [formGroupName]="i"
+                            class="hover:bg-slate-50/50">
 
-                    <!-- Input Qty -->
-                    <td>
-                        <input type="number" formControlName="qty" (input)="recalculateLine(i)" min="1"
-                            style="width: 100%; padding: 6px; box-sizing: border-box;">
-                    </td>
+                            <td class="px-4 py-3">
+                                <select formControlName="item_id" (change)="onItemChange(i)"
+                                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                                    <option value="">-- Pilih Barang --</option>
+                                    <option *ngFor="let item of availableItems" [value]="item.id">
+                                        {{ item.name }} (Stok: {{ item.stock }}) {{ item.is_promo ? '🔥 [PROMO]' : '' }}
+                                    </option>
+                                </select>
+                            </td>
 
-                    <!-- Persentase Diskon -->
-                    <td style="text-align: center;">
-                        <strong>{{ line.get('discount_percent')?.value }}%</strong>
-                    </td>
+                            <td class="px-4 py-3 font-medium text-slate-600">
+                                {{ formatRupiah(line.get('unit_price')?.value) }}
+                            </td>
+                            <td class="px-4 py-3">
+                                <input type="number" formControlName="qty" (input)="recalculateLine(i)" min="1"
+                                    class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-center focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </td>
 
-                    <!-- Subtotal Line Total -->
-                    <td>{{ formatRupiah(line.get('line_total')?.value) }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <span
+                                    [class]="line.get('discount_percent')?.value > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-500'"
+                                    class="px-2.5 py-1 rounded-full font-bold text-xs">
+                                    {{ line.get('discount_percent')?.value }}%
+                                </span>
+                            </td>
 
-                    <!-- Hapus Baris -->
-                    <td style="text-align: center;">
-                        <button type="button" (click)="removeLine(i)" [disabled]="lines.length === 1"
-                            style="color: red;">Hapus</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                            <td class="px-4 py-3 text-right font-bold text-slate-800">
+                                {{ formatRupiah(line.get('line_total')?.value) }}
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <button type="button" (click)="removeLine(i)" [disabled]="lines.length === 1"
+                                    class="text-slate-400 hover:text-rose-600 disabled:opacity-30 disabled:hover:text-slate-400 p-1">
+                                    ✕
+                                </button>
+                            </td>
 
-        <button type="button" (click)="addLine()" style="margin-bottom: 20px; padding: 8px 12px; cursor: pointer;">
-            + Tambah Baris Item
-        </button>
-
-        <!-- Total Keseluruhan -->
-        <div
-            style="background-color: #f7fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 4px; text-align: right; margin-bottom: 20px;">
-            <h3 style="margin: 0;">Total Pesanan: {{ formatRupiah(grandTotal) }}</h3>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <!-- Tombol Submit -->
-        <button type="submit" [disabled]="isLoading || orderForm.invalid"
-            style="padding: 10px 20px; background-color: #3182ce; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
-            {{ isLoading ? 'Memproses...' : 'Kirim Pesanan (Draft)' }}
-        </button>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100 mt-6">
+            <div>
+                <span class="text-xs text-slate-400 uppercase font-bold tracking-wider block">Ringkasan
+                    Pembayaran</span>
+                <span class="text-2xl font-extrabold text-slate-900">{{ formatRupiah(grandTotal) }}</span>
+            </div>
+
+            <button type="submit" [disabled]="isLoading || orderForm.invalid"
+                class="w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                {{ isLoading ? 'Memproses Pesanan...' : 'Simpan Pesanan' }}
+            </button>
+        </div>
+
     </form>
 </div>

@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-import { ItemList } from './components/item-list/item-list';
-import { OrderForm } from './components/order-form/order-form';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ItemList, OrderForm],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

@@ -37,7 +37,6 @@ export class ItemList implements OnInit {
     });
   }
 
-  // Helper function sederhana untuk format Rupiah
   formatRupiah(amount: number): string {
     return 'Rp ' + amount.toLocaleString('id-ID');
   }
