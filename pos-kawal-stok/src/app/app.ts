@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { ItemList } from './components/item-list/item-list';
+import { OrderForm } from './components/order-form/order-form';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ItemList],
+  imports: [ItemList, OrderForm],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

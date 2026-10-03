@@ -1,1 +1,95 @@
-<p>order-form works!</p>
+<div class="container" style="padding: 20px; font-family: sans-serif; max-width: 900px;">
+    <h2>Buat Pesanan Baru (Draft)</h2>
+
+    <!-- Pesan Sukses -->
+    <div *ngIf="successMessage"
+        style="padding: 10px; background-color: #c6f6d5; color: #22543d; border-radius: 4px; margin-bottom: 15px;">
+        {{ successMessage }}
+    </div>
+
+    <!-- Pesan Error 4xx dari API -->
+    <div *ngIf="errorMessage"
+        style="padding: 10px; background-color: #fed7d7; color: #9b2c2c; border-radius: 4px; margin-bottom: 15px;">
+        {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
+        <!-- Input Reseller -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 5px;">Nama Reseller:</label>
+            <input type="text" formControlName="reseller" placeholder="Masukkan nama reseller"
+                style="width: 100%; padding: 8px; box-sizing: border-box;">
+            <small *ngIf="orderForm.get('reseller')?.touched && orderForm.get('reseller')?.invalid" style="color: red;">
+                Nama reseller wajib diisi.
+            </small>
+        </div>
+
+        <!-- Tabel FormArray Item -->
+        <h3>Baris Item Pesanan</h3>
+        <table border="1" cellpadding="8" cellspacing="0"
+            style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+            <thead>
+                <tr style="background-color: #edf2f7;">
+                    <th style="width: 35%;">Item</th>
+                    <th style="width: 15%;">Harga Satuan</th>
+                    <th style="width: 15%;">Qty</th>
+                    <th style="width: 10%;">Diskon</th>
+                    <th style="width: 15%;">Subtotal</th>
+                    <th style="width: 10%;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody formArrayName="lines">
+                <tr *ngFor="let line of lines.controls; let i = index" [formGroupName]="i">
+                    <!-- Pilih Item -->
+                    <td>
+                        <select formControlName="item_id" (change)="onItemChange(i)" style="width: 100%; padding: 6px;">
+                            <option value="">-- Pilih Item --</option>
+                            <option *ngFor="let item of availableItems" [value]="item.id">
+                                {{ item.name }} (Stok: {{ item.stock }}) {{ item.is_promo ? '[PROMO]' : '' }}
+                            </option>
+                        </select>
+                    </td>
+
+                    <!-- Harga Satuan Snapshot -->
+                    <td>{{ formatRupiah(line.get('unit_price')?.value) }}</td>
+
+                    <!-- Input Qty -->
+                    <td>
+                        <input type="number" formControlName="qty" (input)="recalculateLine(i)" min="1"
+                            style="width: 100%; padding: 6px; box-sizing: border-box;">
+                    </td>
+
+                    <!-- Persentase Diskon -->
+                    <td style="text-align: center;">
+                        <strong>{{ line.get('discount_percent')?.value }}%</strong>
+                    </td>
+
+                    <!-- Subtotal Line Total -->
+                    <td>{{ formatRupiah(line.get('line_total')?.value) }}</td>
+
+                    <!-- Hapus Baris -->
+                    <td style="text-align: center;">
+                        <button type="button" (click)="removeLine(i)" [disabled]="lines.length === 1"
+                            style="color: red;">Hapus</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button" (click)="addLine()" style="margin-bottom: 20px; padding: 8px 12px; cursor: pointer;">
+            + Tambah Baris Item
+        </button>
+
+        <!-- Total Keseluruhan -->
+        <div
+            style="background-color: #f7fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 4px; text-align: right; margin-bottom: 20px;">
+            <h3 style="margin: 0;">Total Pesanan: {{ formatRupiah(grandTotal) }}</h3>
+        </div>
+
+        <!-- Tombol Submit -->
+        <button type="submit" [disabled]="isLoading || orderForm.invalid"
+            style="padding: 10px 20px; background-color: #3182ce; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+            {{ isLoading ? 'Memproses...' : 'Kirim Pesanan (Draft)' }}
+        </button>
+    </form>
+</div>
