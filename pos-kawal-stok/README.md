@@ -1,59 +1,58 @@
-# PosKawalStok
+# POS Kawal Stok
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.19.
+Sistem pencatatan pesanan (Point of Sale) dan manajemen inventaris berbasis web yang dibangun dengan standar *modern web design*. Aplikasi ini dirancang khusus untuk memfasilitasi distributor dalam mencatat pesanan agen/reseller dan mengontrol ketersediaan barang secara real-time.
 
-## Development server
+## Fitur Utama
 
-To start a local development server, run:
+- **Buat Pesanan (Order Form):** Form dinamis untuk membuat pesanan baru dari reseller. Dilengkapi dengan perhitungan otomatis (subtotal, diskon grosir, grand total) serta badge khusus untuk item berstatus promo.
+- **Pengecekan Stok (Inventory Monitoring):** Pemantauan ketersediaan stok barang secara seketika (*real-time*). Dilengkapi dengan kontrol manual untuk menyesuaikan jumlah stok fisik (tambah/kurang stok).
+- **Manajemen Pesanan (Order List):** Menampilkan daftar riwayat pesanan yang sudah masuk berserta status pesanannya.
+- **Auto Stock Deduction:** Sistem terintegrasi cerdas di mana stok barang akan otomatis berkurang dengan sendirinya apabila pesanan baru berhasil dibuat. Terdapat validasi jika stok tidak mencukupi untuk mencegah overselling.
+- **Premium UI/UX:** Antarmuka pengguna (UI) modern yang cantik dan intuitif dengan arsitektur navigasi *sidebar*, *glassmorphism effects*, dan desain interaktif menggunakan **Tailwind CSS**.
 
-```bash
-ng serve
-```
+## Teknologi yang Digunakan
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- **Framework Frontend:** Angular (versi 21)
+- **Styling:** Tailwind CSS (Modern Utility-first CSS)
+- **Logika & State Management:** RxJS (Observables, Reactive Programming)
+- **Form Management:** Angular Reactive Forms
 
-## Code scaffolding
+## Cara Menjalankan Project
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Ikuti langkah-langkah di bawah ini untuk menjalankan aplikasi di lingkungan pengembangan lokal (*local environment*):
 
-```bash
-ng generate component component-name
-```
+1. **Pastikan Node.js terinstal**
+   Pastikan Anda sudah menginstal [Node.js](https://nodejs.org/) versi LTS terbaru di sistem Anda.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+2. **Clone atau Download Project**
+   Masuk ke direktori project melalui terminal:
+   ```bash
+   cd pos-kawal-stok
+   ```
 
-```bash
-ng generate --help
-```
+3. **Instal Dependensi (Dependencies)**
+   Jalankan perintah ini untuk menginstal semua *library* yang diperlukan:
+   ```bash
+   npm install
+   ```
 
-## Building
+4. **Jalankan Aplikasi Server Lokal**
+   Gunakan Angular CLI untuk menjalankan development server (dijadwalkan di port 3000):
+   ```bash
+   ng serve --port 3000
+   ```
+   > **Catatan:** Aplikasi ini secara default dikonfigurasi untuk tidak memiliki *delay* dari sisi API (*mock api synchronous*), sehingga semua data akan dimuat dengan sangat cepat.
 
-To build the project run:
+5. **Buka di Browser**
+   Buka web browser pilihan Anda (Chrome, Firefox, Edge, Safari) dan akses ke alamat berikut:
+   `http://localhost:3000`
 
-```bash
-ng build
-```
+## Struktur Folder Utama
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+- `src/app/components/` - Kumpulan UI komponen utama (seperti `item-list`, `order-form`, dan `order-list`).
+- `src/app/services/` - Kumpulan logika dan simulasi *backend data* (seperti `pos.service.ts` sebagai simulasi API Mock tanpa delay).
+- `src/app/app.html` - Struktur utama layout *sidebar* navigasi.
+- `src/app/app.routes.ts` - Konfigurasi perutean (routing) halaman.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+*Dibuat untuk mempermudah distribusi barang dan manajemen logistik.*
